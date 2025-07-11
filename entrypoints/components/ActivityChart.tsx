@@ -95,7 +95,7 @@ const fetchAllUsageEvents = async (startDate: string, endDate: string): Promise<
     fetchedEvents += data.usageEventsDisplay.length;
     page++;
 
-  } while (false &&fetchedEvents < totalEvents && data.usageEventsDisplay.length > 0);
+  } while (fetchedEvents < totalEvents && data.usageEventsDisplay.length > 0);
 
   return allEvents;
 };
@@ -195,10 +195,26 @@ const ActivityChart: React.FC = () => {
   };
 
   return (
-    <div className="p-6 rounded-xl space-y-8">
-      <UsageCalendar data={usageData} from={from} to={to} theme={theme} />
-      <AcceptedLinesCalendar data={acceptedLinesData} from={from} to={to} theme={theme} />
-      <TokensBarChart data={tokensData} theme={theme} />
+    <div className="space-y-6">
+      <div className="rounded-xl text-brand-foreground border-brand-neutrals-100 dark:border-brand-neutrals-800 border-0 bg-brand-dashboard-card p-6 dark:bg-brand-dashboard-card">
+        <h3 className="text-base font-semibold text-gray-200">AI Chat Requests</h3>
+        <div style={{ height: '200px' }}>
+          <UsageCalendar data={usageData} from={from} to={to} theme={theme} />
+        </div>
+      </div>
+      <div className="rounded-xl text-brand-foreground border-brand-neutrals-100 dark:border-brand-neutrals-800 border-0 bg-brand-dashboard-card p-6 dark:bg-brand-dashboard-card">
+        <h3 className="text-base font-semibold text-gray-200">Accepted Code Suggestions</h3>
+        <div style={{ height: '200px' }} >
+          <AcceptedLinesCalendar data={acceptedLinesData} from={from} to={to} theme={theme} />
+        </div>
+      </div>
+      <div className="rounded-xl text-brand-foreground border-brand-neutrals-100 dark:border-brand-neutrals-800 border-0 bg-brand-dashboard-card p-6 dark:bg-brand-dashboard-card">
+        <h3 className="text-base font-semibold text-gray-200">Token Usage (last 30 days)</h3>
+        <p className="px-6 text-sm text-gray-500">Approximation of token usage. Does not include data from models like GPT-4o, Claude 3 Opus, etc.</p>
+        <div style={{ height: '400px' }} className="p-3">
+          <TokensBarChart data={tokensData} theme={theme} />
+        </div>
+      </div>
     </div>
   );
 };

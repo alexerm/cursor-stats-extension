@@ -43,8 +43,8 @@ export default defineContentScript({
           chartContainer.id = 'cursor-activity-chart';
           chartContainer.style.marginBottom = '24px';
           
-          // Insert the container as the first child
-          targetElement.insertBefore(chartContainer, targetElement.firstChild);
+          // Insert the container as the second child
+          targetElement.insertBefore(chartContainer, targetElement.children[1]);
           
           // Render the React component
           const root = ReactDOM.createRoot(chartContainer);
