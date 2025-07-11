@@ -46,6 +46,29 @@ interface BarChartData {
   [key: string]: string | number;
 }
 
+interface TokenUsage {
+  inputTokens?: number;
+  outputTokens?: number;
+  cacheReadTokens?: number;
+  totalCents?: number;
+}
+
+interface UsageEvent {
+  timestamp: string;
+  model: string;
+  kind: string;
+  requestsCosts?: number;
+  usageBasedCosts?: string;
+  isTokenBasedCall: boolean;
+  tokenUsage?: TokenUsage;
+  owningUser: string;
+}
+
+interface UsageEventsData {
+  totalUsageEventsCount: number;
+  usageEventsDisplay: UsageEvent[];
+}
+
 const transformDataForUsageCalendar = (analyticsData: AnalyticsData): CalendarData[] => {
   return analyticsData.dailyMetrics.map((metric) => {
     const date = new Date(parseInt(metric.date, 10));
@@ -68,20 +91,77 @@ const transformDataForAcceptedLinesCalendar = (analyticsData: AnalyticsData): Ca
   });
 };
 
-const transformDataForTokensBarChart = (analyticsData: AnalyticsData): BarChartData[] => {
-  return analyticsData.dailyMetrics.map((metric) => {
-    const date = new Date(parseInt(metric.date, 10));
-    const day = date.toISOString().split('T')[0].substring(5); // Show MM-DD
-    return {
-      day,
-      subscription: metric.subscriptionIncludedReqs || 0,
-      usage: metric.usageBasedReqs || 0,
-    };
+const transformDataForTokensBarChart = (usageEvents: UsageEvent[]): BarChartData[] => {
+  const dailyTokens: { [day: string]: { subscription: number; usage: number } } = {};
+
+  usageEvents.forEach((event) => {
+    // Not filtering any model for now, will add a note as requested.
+    const date = new Date(parseInt(event.timestamp, 10));
+    const day = date.toISOString().split('T')[0].substring(5); // MM-DD
+
+    if (!dailyTokens[day]) {
+      dailyTokens[day] = { subscription: 0, usage: 0 };
+    }
+
+    if (event.tokenUsage) {
+      const totalTokens = (event.tokenUsage.inputTokens || 0) + (event.tokenUsage.outputTokens || 0);
+
+      if (event.kind === 'USAGE_EVENT_KIND_INCLUDED_IN_PRO') {
+        dailyTokens[day].subscription += totalTokens;
+      } else if (event.kind === 'USAGE_EVENT_KIND_USAGE_BASED') {
+        dailyTokens[day].usage += totalTokens;
+      }
+    }
   });
-}
+
+  return Object.keys(dailyTokens).map((day) => ({
+    day,
+    ...dailyTokens[day],
+  })).sort((a, b) => a.day.localeCompare(b.day));
+};
+
+const fetchAllUsageEvents = async (startDate: string, endDate: string): Promise<UsageEvent[]> => {
+  let allEvents: UsageEvent[] = [];
+  let page = 1;
+  const pageSize = 600;
+  let totalEvents = 0;
+  let fetchedEvents = 0;
+  let data: UsageEventsData;
+
+  do {
+    const response = await fetch('https://cursor.com/api/dashboard/get-filtered-usage-events', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        teamId: 0,
+        startDate,
+        endDate,
+        page,
+        pageSize,
+      }),
+    });
+
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+
+    data = await response.json();
+    allEvents = allEvents.concat(data.usageEventsDisplay);
+
+    if (page === 1) {
+      totalEvents = data.totalUsageEventsCount;
+    }
+    fetchedEvents += data.usageEventsDisplay.length;
+    page++;
+
+  } while (fetchedEvents < totalEvents && data.usageEventsDisplay.length > 0);
+
+  return allEvents;
+};
 
 const ActivityChart: React.FC = () => {
   const [analyticsData, setAnalyticsData] = useState<AnalyticsData | null>(null);
+  const [usageEvents, setUsageEvents] = useState<UsageEvent[] | null>(null);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
@@ -91,23 +171,27 @@ const ActivityChart: React.FC = () => {
         const today = new Date();
         const endDate = new Date(today.setDate(today.getDate() + 1)).getTime().toString();
 
-        const response = await fetch('https://cursor.com/api/dashboard/get-user-analytics', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            teamId: 0,
-            userId: 0,
-            startDate,
-            endDate,
+        const [analyticsDataResponse, usageEventsData] = await Promise.all([
+          fetch('https://cursor.com/api/dashboard/get-user-analytics', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              teamId: 0,
+              userId: 0,
+              startDate,
+              endDate,
+            }),
           }),
-        });
-
-        if (!response.ok) {
-          throw new Error(`HTTP error! status: ${response.status}`);
+          fetchAllUsageEvents(startDate, endDate)
+        ]);
+        
+        if (!analyticsDataResponse.ok) {
+          throw new Error(`HTTP error! status: ${analyticsDataResponse.status}`);
         }
 
-        const data = await response.json();
-        setAnalyticsData(data);
+        const analyticsData = await analyticsDataResponse.json();
+        setAnalyticsData(analyticsData);
+        setUsageEvents(usageEventsData);
       } catch (e: any) {
         setError(e.message);
       }
@@ -120,13 +204,20 @@ const ActivityChart: React.FC = () => {
     return <div className="p-6 text-red-500">Error fetching data: {error}</div>;
   }
 
-  if (!analyticsData) {
+  if (!analyticsData || !usageEvents) {
     return <div className="p-6 text-gray-50">Loading analytics data...</div>;
   }
   
   const usageData = transformDataForUsageCalendar(analyticsData);
   const acceptedLinesData = transformDataForAcceptedLinesCalendar(analyticsData);
-  const tokensData = transformDataForTokensBarChart(analyticsData);
+  
+  const thirtyDaysAgo = new Date();
+  thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
+  const last30DaysUsageEvents = usageEvents.filter(event => {
+    const eventDate = new Date(parseInt(event.timestamp, 10));
+    return eventDate >= thirtyDaysAgo;
+  });
+  const tokensData = transformDataForTokensBarChart(last30DaysUsageEvents);
 
   const currentYear = new Date().getFullYear();
   const from = `${currentYear}-01-01`;
@@ -205,7 +296,7 @@ const ActivityChart: React.FC = () => {
       </div>
 
       <div>
-        <h2 className="text-xl font-bold text-gray-50 mb-2">Subscription vs Usage-Based Requests</h2>
+        <h2 className="text-xl font-bold text-gray-50 mb-2">Subscription vs Usage-Based Tokens</h2>
         <div style={{ height: '300px' }}>
           <ResponsiveBar
             data={tokensData}
@@ -265,6 +356,9 @@ const ActivityChart: React.FC = () => {
             theme={theme}
           />
         </div>
+        <p className="text-xs text-gray-400 mt-2 text-center">
+          * Note: Default model tokens are excluded from this chart.
+        </p>
       </div>
     </div>
   );
