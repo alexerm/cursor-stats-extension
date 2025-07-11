@@ -61,7 +61,11 @@ const transformDataForTokensBarChart = (usageEvents: UsageEvent[]): BarChartData
   })).sort((a, b) => a.day.localeCompare(b.day));
 };
 
-const fetchAllUsageEvents = async (startDate: string, endDate: string): Promise<UsageEvent[]> => {
+const fetchAllUsageEvents = async (
+  startDate: string, 
+  endDate: string,
+  onProgress?: (events: UsageEvent[], progress: { fetched: number, total: number }) => void
+): Promise<UsageEvent[]> => {
   let allEvents: UsageEvent[] = [];
   let page = 1;
   const pageSize = 600;
@@ -93,6 +97,12 @@ const fetchAllUsageEvents = async (startDate: string, endDate: string): Promise<
       totalEvents = data.totalUsageEventsCount;
     }
     fetchedEvents += data.usageEventsDisplay.length;
+    
+    // Call progress callback with current events
+    if (onProgress) {
+      onProgress(allEvents, { fetched: fetchedEvents, total: totalEvents });
+    }
+    
     page++;
 
   } while (fetchedEvents < totalEvents && data.usageEventsDisplay.length > 0);
@@ -102,67 +112,61 @@ const fetchAllUsageEvents = async (startDate: string, endDate: string): Promise<
 
 const ActivityChart: React.FC = () => {
   const [analyticsData, setAnalyticsData] = useState<AnalyticsData | null>(null);
-  const [usageEvents, setUsageEvents] = useState<UsageEvent[] | null>(null);
-  const [error, setError] = useState<string | null>(null);
+  const [usageEvents, setUsageEvents] = useState<UsageEvent[]>([]);
+  const [usageEventsLoading, setUsageEventsLoading] = useState(true);
+  const [usageEventsProgress, setUsageEventsProgress] = useState({ fetched: 0, total: 0 });
+  const [analyticsError, setAnalyticsError] = useState<string | null>(null);
+  const [usageEventsError, setUsageEventsError] = useState<string | null>(null);
 
   useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const startDate = new Date('2024-01-01T00:00:00Z').getTime().toString();
-        const today = new Date();
-        const endDate = new Date(today.setDate(today.getDate() + 1)).getTime().toString();
+    const startDate = new Date('2024-01-01T00:00:00Z').getTime().toString();
+    const today = new Date();
+    const endDate = new Date(today.setDate(today.getDate() + 1)).getTime().toString();
 
-        const [analyticsDataResponse, usageEventsData] = await Promise.all([
-          fetch('https://cursor.com/api/dashboard/get-user-analytics', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-              teamId: 0,
-              userId: 0,
-              startDate,
-              endDate,
-            }),
+    // Fetch analytics data independently
+    const fetchAnalyticsData = async () => {
+      try {
+        const response = await fetch('https://cursor.com/api/dashboard/get-user-analytics', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            teamId: 0,
+            userId: 0,
+            startDate,
+            endDate,
           }),
-          fetchAllUsageEvents(startDate, endDate)
-        ]);
+        });
         
-        if (!analyticsDataResponse.ok) {
-          throw new Error(`HTTP error! status: ${analyticsDataResponse.status}`);
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
         }
 
-        const analyticsData = await analyticsDataResponse.json();
-        setAnalyticsData(analyticsData);
-        setUsageEvents(usageEventsData);
+        const data = await response.json();
+        setAnalyticsData(data);
       } catch (e: any) {
-        setError(e.message);
+        setAnalyticsError(e.message);
       }
     };
 
-    fetchData();
+    // Fetch usage events independently with progress updates
+    const fetchUsageEventsData = async () => {
+      try {
+        setUsageEventsLoading(true);
+        await fetchAllUsageEvents(startDate, endDate, (events, progress) => {
+          setUsageEvents(events);
+          setUsageEventsProgress(progress);
+        });
+        setUsageEventsLoading(false);
+      } catch (e: any) {
+        setUsageEventsError(e.message);
+        setUsageEventsLoading(false);
+      }
+    };
+
+    // Start both fetches independently
+    fetchAnalyticsData();
+    fetchUsageEventsData();
   }, []);
-
-  if (error) {
-    return <div className="p-6 text-red-500">Error fetching data: {error}</div>;
-  }
-
-  if (!analyticsData || !usageEvents) {
-    return <div className="p-6 text-gray-50">Loading analytics data...</div>;
-  }
-  
-  const usageData = transformDataForUsageCalendar(analyticsData);
-  const acceptedLinesData = transformDataForAcceptedLinesCalendar(analyticsData);
-  
-  const thirtyDaysAgo = new Date();
-  thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
-  const last30DaysUsageEvents = usageEvents.filter(event => {
-    const eventDate = new Date(parseInt(event.timestamp, 10));
-    return eventDate >= thirtyDaysAgo;
-  });
-  const tokensData = transformDataForTokensBarChart(last30DaysUsageEvents);
-
-  const currentYear = new Date().getFullYear();
-  const from = `${currentYear}-01-01`;
-  const to = `${currentYear}-12-31`;
 
   const theme = {
     labels: {
@@ -194,26 +198,77 @@ const ActivityChart: React.FC = () => {
   },
   };
 
+  const currentYear = new Date().getFullYear();
+  const from = `${currentYear}-01-01`;
+  const to = `${currentYear}-12-31`;
+
+  // Calculate data for charts that are ready
+  const usageData = analyticsData ? transformDataForUsageCalendar(analyticsData) : [];
+  const acceptedLinesData = analyticsData ? transformDataForAcceptedLinesCalendar(analyticsData) : [];
+  
+  // Calculate tokens data from current usage events (even if still loading)
+  const thirtyDaysAgo = new Date();
+  thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
+  const last30DaysUsageEvents = usageEvents.filter(event => {
+    const eventDate = new Date(parseInt(event.timestamp, 10));
+    return eventDate >= thirtyDaysAgo;
+  });
+  const tokensData = transformDataForTokensBarChart(last30DaysUsageEvents);
+
   return (
     <div className="space-y-6">
+      {/* AI Chat Requests - Shows when analyticsData is ready */}
       <div className="rounded-xl text-brand-foreground border-brand-neutrals-100 dark:border-brand-neutrals-800 border-0 bg-brand-dashboard-card p-6 dark:bg-brand-dashboard-card">
-        <h3 className="text-base font-semibold text-gray-200">AI Chat Requests</h3>
-        <div style={{ height: '200px' }}>
-          <UsageCalendar data={usageData} from={from} to={to} theme={theme} />
-        </div>
+        <h3 className="text-base font-semibold text-gray-200">Agent Messages</h3>
+        {analyticsError ? (
+          <div className="text-red-500 text-sm mt-2">Error loading data: {analyticsError}</div>
+        ) : !analyticsData ? (
+          <div className="text-gray-50 text-sm mt-2">Loading...</div>
+        ) : (
+          <div style={{ height: '200px' }}>
+            <UsageCalendar data={usageData} from={from} to={to} theme={theme} />
+          </div>
+        )}
       </div>
+
+      {/* Accepted Code Suggestions - Shows when analyticsData is ready */}
       <div className="rounded-xl text-brand-foreground border-brand-neutrals-100 dark:border-brand-neutrals-800 border-0 bg-brand-dashboard-card p-6 dark:bg-brand-dashboard-card">
-        <h3 className="text-base font-semibold text-gray-200">Accepted Code Suggestions</h3>
-        <div style={{ height: '200px' }} >
-          <AcceptedLinesCalendar data={acceptedLinesData} from={from} to={to} theme={theme} />
-        </div>
+        <h3 className="text-base font-semibold text-gray-200">Accepted Lines of Code</h3>
+        {analyticsError ? (
+          <div className="text-red-500 text-sm mt-2">Error loading data: {analyticsError}</div>
+        ) : !analyticsData ? (
+          <div className="text-gray-50 text-sm mt-2">Loading...</div>
+        ) : (
+          <div style={{ height: '200px' }} >
+            <AcceptedLinesCalendar data={acceptedLinesData} from={from} to={to} theme={theme} />
+          </div>
+        )}
       </div>
+
+      {/* Token Usage - Updates progressively as data loads */}
       <div className="rounded-xl text-brand-foreground border-brand-neutrals-100 dark:border-brand-neutrals-800 border-0 bg-brand-dashboard-card p-6 dark:bg-brand-dashboard-card">
-        <h3 className="text-base font-semibold text-gray-200">Token Usage (last 30 days)</h3>
+        <h3 className="text-base font-semibold text-gray-200">
+          Token Usage (last 30 days)
+          {usageEventsLoading && usageEventsProgress.total > 0 && (
+            <span className="text-sm font-normal text-gray-400 ml-2">
+              ({Math.round((usageEventsProgress.fetched / usageEventsProgress.total) * 100)}% loaded)
+            </span>
+          )}
+        </h3>
         <p className="px-6 text-sm text-gray-500">Approximation of token usage. Does not include data from models like GPT-4o, Claude 3 Opus, etc.</p>
-        <div style={{ height: '400px' }} className="p-3">
-          <TokensBarChart data={tokensData} theme={theme} />
-        </div>
+        {usageEventsError ? (
+          <div className="text-red-500 text-sm mt-2 px-6">Error loading usage data: {usageEventsError}</div>
+        ) : (
+          <div style={{ height: '400px' }} className="p-3">
+            {tokensData.length === 0 && usageEventsLoading ? (
+              <div className="flex items-center justify-center h-full text-gray-50 text-sm">
+                Loading usage events...
+              </div>
+            ) : (
+              <TokensBarChart data={tokensData} theme={theme} />
+            )}
+          </div>
+        )}
       </div>
     </div>
   );
