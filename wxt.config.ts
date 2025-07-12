@@ -18,13 +18,13 @@ export default defineConfig({
     description: 'Track and visualize your Cursor AI coding activity with charts and statistics',
     version: getManifestVersion(),
     version_name: pkgVersion,
-    permissions: ['storage', 'activeTab'],
+    permissions: ['activeTab'],
     host_permissions: ['*://cursor.com/*'],
     content_security_policy: {
       extension_pages: "script-src 'self'; object-src 'self'",
     },
     action: {
-      default_title: 'Cursor Stats',
+      default_title: 'Cursor Stats - Click to view charts',
     },
   },
 });

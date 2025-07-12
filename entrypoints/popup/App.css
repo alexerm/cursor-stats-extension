@@ -1,8 +1,73 @@
 .app-container {
-  width: 800px;
-  margin: 0 auto;
-  padding: 2rem;
+  width: 340px;
+  margin: 0;
+  padding: 2.2rem 1.5rem 2rem 1.5rem;
   text-align: center;
-  background-color: #1a1a1a;
-  color: white;
+  background: #18181b;
+  color: #f4f4f5;
+  font-family: 'Inter', 'Helvetica Neue', Arial, system-ui, sans-serif;
+  box-shadow: 0 2px 16px rgba(0,0,0,0.10);
+  min-height: 220px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.app-logo {
+  width: 48px;
+  height: 48px;
+  margin-bottom: 1.1rem;
+  border-radius: 10px;
+  box-shadow: 0 1px 6px rgba(0,0,0,0.10);
+}
+
+.app-heading {
+  font-size: 1.32rem;
+  font-weight: 700;
+  margin: 0 0 0.5rem 0;
+  letter-spacing: -0.5px;
+}
+
+.app-desc {
+  font-size: 1.01rem;
+  color: #d4d4d8;
+  margin: 0 0 1.4rem 0;
+  line-height: 1.6;
+}
+
+.app-cta {
+  display: inline-block;
+  background: #4b5563;
+  color: #fff;
+  font-weight: 600;
+  font-size: 1.05rem;
+  padding: 0.68em 1.6em;
+  border: none;
+  border-radius: 8px;
+  text-decoration: none;
+  outline: none;
+}
+
+.app-cta:hover, .app-cta:focus {
+  background: #374151;
+  text-decoration: none;
+}
+
+.app-container a {
+  color: #a5b4fc;
+  text-decoration: none;
+  transition: color 0.15s, text-decoration 0.15s;
+  font-weight: 500;
+}
+
+.app-container a:hover {
+  color: #c7d2fe;
+  text-decoration: underline;
+}
+
+.app-container p {
+  margin: 0;
+  font-size: 1.08rem;
+  line-height: 1.7;
 }
