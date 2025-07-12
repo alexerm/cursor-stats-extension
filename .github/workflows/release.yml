@@ -9,50 +9,50 @@ on:
 jobs:
   build-and-release:
     runs-on: ubuntu-latest
-    
+
     permissions:
       contents: write
-    
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
-      
+
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: '20'
-      
+
       - name: Setup pnpm
         uses: pnpm/action-setup@v2
         with:
           version: 8
-      
+
       - name: Install dependencies
         run: pnpm install
-      
+
       - name: Get version from tag
         id: get_version
         run: |
           VERSION=${GITHUB_REF#refs/tags/v}
           echo "VERSION=$VERSION" >> $GITHUB_OUTPUT
           echo "TAG_VERSION=${GITHUB_REF#refs/tags/}" >> $GITHUB_OUTPUT
-      
+
       - name: Update package.json version
         run: |
           npm version ${{ steps.get_version.outputs.VERSION }} --no-git-tag-version
-      
+
       - name: Build extension
         run: pnpm build
-      
+
       - name: Create Chrome extension zip
         run: pnpm zip
-      
+
       - name: Build Firefox extension
         run: pnpm build:firefox
-      
+
       - name: Create Firefox extension zip
         run: pnpm zip:firefox
-      
+
       - name: Create Release
         uses: softprops/action-gh-release@v1
         with:
@@ -64,24 +64,24 @@ jobs:
             .output/*-firefox.zip
           body: |
             ## What's Changed
-            
+
             <!-- Add your release notes here -->
-            
+
             ## Installation
-            
+
             ### Chrome/Edge/Brave
             1. Download the `-chrome.zip` file
             2. Extract the zip file
             3. Open Chrome and go to `chrome://extensions/`
             4. Enable "Developer mode"
             5. Click "Load unpacked" and select the extracted folder
-            
+
             ### Firefox
             1. Download the `-firefox.zip` file
             2. Open Firefox and go to `about:debugging`
             3. Click "This Firefox"
             4. Click "Load Temporary Add-on"
             5. Select the downloaded zip file
-            
+
             ---
             **Full Changelog**: https://github.com/${{ github.repository }}/compare/${{ steps.get_version.outputs.PREVIOUS_TAG }}...${{ steps.get_version.outputs.TAG_VERSION }}

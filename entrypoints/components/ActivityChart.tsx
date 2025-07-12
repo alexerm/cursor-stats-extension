@@ -1,11 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import {
-  AnalyticsData,
-  BarChartData,
-  CalendarData,
-  UsageEvent,
-  UsageEventsData,
-} from './types';
+import { AnalyticsData, BarChartData, CalendarData, UsageEvent, UsageEventsData } from './types';
 import UsageCalendar from './UsageCalendar';
 import AcceptedLinesCalendar from './AcceptedLinesCalendar';
 import TokensBarChart from './TokensBarChart';
@@ -45,7 +39,8 @@ const transformDataForTokensBarChart = (usageEvents: UsageEvent[]): BarChartData
     }
 
     if (event.tokenUsage) {
-      const totalTokens = (event.tokenUsage.inputTokens || 0) + (event.tokenUsage.outputTokens || 0);
+      const totalTokens =
+        (event.tokenUsage.inputTokens || 0) + (event.tokenUsage.outputTokens || 0);
 
       if (event.kind === 'USAGE_EVENT_KIND_INCLUDED_IN_PRO') {
         dailyTokens[day].subscription += totalTokens;
@@ -55,16 +50,18 @@ const transformDataForTokensBarChart = (usageEvents: UsageEvent[]): BarChartData
     }
   });
 
-  return Object.keys(dailyTokens).map((day) => ({
-    day,
-    ...dailyTokens[day],
-  })).sort((a, b) => a.day.localeCompare(b.day));
+  return Object.keys(dailyTokens)
+    .map((day) => ({
+      day,
+      ...dailyTokens[day],
+    }))
+    .sort((a, b) => a.day.localeCompare(b.day));
 };
 
 const fetchAllUsageEvents = async (
-  startDate: string, 
+  startDate: string,
   endDate: string,
-  onProgress?: (events: UsageEvent[], progress: { fetched: number, total: number }) => void
+  onProgress?: (events: UsageEvent[], progress: { fetched: number; total: number }) => void,
 ): Promise<UsageEvent[]> => {
   let allEvents: UsageEvent[] = [];
   let page = 1;
@@ -97,14 +94,13 @@ const fetchAllUsageEvents = async (
       totalEvents = data.totalUsageEventsCount;
     }
     fetchedEvents += data.usageEventsDisplay.length;
-    
+
     // Call progress callback with current events
     if (onProgress) {
       onProgress(allEvents, { fetched: fetchedEvents, total: totalEvents });
     }
-    
-    page++;
 
+    page++;
   } while (fetchedEvents < totalEvents && data.usageEventsDisplay.length > 0);
 
   return allEvents;
@@ -136,15 +132,15 @@ const ActivityChart: React.FC = () => {
             endDate,
           }),
         });
-        
+
         if (!response.ok) {
           throw new Error(`HTTP error! status: ${response.status}`);
         }
 
         const data = await response.json();
         setAnalyticsData(data);
-      } catch (e: any) {
-        setAnalyticsError(e.message);
+      } catch (e: unknown) {
+        setAnalyticsError(e instanceof Error ? e.message : 'Unknown error');
       }
     };
 
@@ -157,8 +153,8 @@ const ActivityChart: React.FC = () => {
           setUsageEventsProgress(progress);
         });
         setUsageEventsLoading(false);
-      } catch (e: any) {
-        setUsageEventsError(e.message);
+      } catch (e: unknown) {
+        setUsageEventsError(e instanceof Error ? e.message : 'Unknown error');
         setUsageEventsLoading(false);
       }
     };
@@ -186,16 +182,16 @@ const ActivityChart: React.FC = () => {
     },
     axis: {
       ticks: {
-          text: {
-              fill: '#9ca3af',
-          },
+        text: {
+          fill: '#9ca3af',
+        },
       },
       legend: {
-          text: {
-              fill: '#9ca3af',
-          },
+        text: {
+          fill: '#9ca3af',
+        },
       },
-  },
+    },
   };
 
   const currentYear = new Date().getFullYear();
@@ -204,12 +200,14 @@ const ActivityChart: React.FC = () => {
 
   // Calculate data for charts that are ready
   const usageData = analyticsData ? transformDataForUsageCalendar(analyticsData) : [];
-  const acceptedLinesData = analyticsData ? transformDataForAcceptedLinesCalendar(analyticsData) : [];
-  
+  const acceptedLinesData = analyticsData
+    ? transformDataForAcceptedLinesCalendar(analyticsData)
+    : [];
+
   // Calculate tokens data from current usage events (even if still loading)
   const thirtyDaysAgo = new Date();
   thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
-  const last30DaysUsageEvents = usageEvents.filter(event => {
+  const last30DaysUsageEvents = usageEvents.filter((event) => {
     const eventDate = new Date(parseInt(event.timestamp, 10));
     return eventDate >= thirtyDaysAgo;
   });
@@ -239,7 +237,7 @@ const ActivityChart: React.FC = () => {
         ) : !analyticsData ? (
           <div className="text-gray-50 text-sm mt-2">Loading...</div>
         ) : (
-          <div style={{ height: '200px' }} >
+          <div style={{ height: '200px' }}>
             <AcceptedLinesCalendar data={acceptedLinesData} from={from} to={to} theme={theme} />
           </div>
         )}
@@ -251,13 +249,19 @@ const ActivityChart: React.FC = () => {
           Token Usage (last 30 days)
           {usageEventsLoading && usageEventsProgress.total > 0 && (
             <span className="text-sm font-normal text-gray-400 ml-2">
-              ({Math.round((usageEventsProgress.fetched / usageEventsProgress.total) * 100)}% loaded)
+              ({Math.round((usageEventsProgress.fetched / usageEventsProgress.total) * 100)}%
+              loaded)
             </span>
           )}
         </h3>
-        <p className="px-6 text-sm text-gray-500">Approximation of token usage. Does not include data from models like GPT-4o, Claude 3 Opus, etc.</p>
+        <p className="px-6 text-sm text-gray-500">
+          Approximation of token usage. Does not include data from models like GPT-4o, Claude 3
+          Opus, etc.
+        </p>
         {usageEventsError ? (
-          <div className="text-red-500 text-sm mt-2 px-6">Error loading usage data: {usageEventsError}</div>
+          <div className="text-red-500 text-sm mt-2 px-6">
+            Error loading usage data: {usageEventsError}
+          </div>
         ) : (
           <div style={{ height: '400px' }} className="p-3">
             {tokensData.length === 0 && usageEventsLoading ? (
@@ -274,4 +278,4 @@ const ActivityChart: React.FC = () => {
   );
 };
 
-export default ActivityChart; 
+export default ActivityChart;

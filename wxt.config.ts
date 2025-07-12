@@ -8,18 +8,13 @@ export default defineConfig({
     name: 'Cursor Stats',
     description: 'Track and visualize your Cursor AI coding activity with charts and statistics',
     version,
-    permissions: [
-      'storage',
-      'activeTab'
-    ],
-    host_permissions: [
-      '*://cursor.com/*'
-    ],
+    permissions: ['storage', 'activeTab'],
+    host_permissions: ['*://cursor.com/*'],
     content_security_policy: {
-      extension_pages: "script-src 'self'; object-src 'self'"
+      extension_pages: "script-src 'self'; object-src 'self'",
     },
     action: {
-      default_title: 'Cursor Stats'
-    }
-  }
+      default_title: 'Cursor Stats',
+    },
+  },
 });

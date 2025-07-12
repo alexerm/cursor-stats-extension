@@ -63,4 +63,4 @@ export interface UsageEvent {
 export interface UsageEventsData {
   totalUsageEventsCount: number;
   usageEventsDisplay: UsageEvent[];
-} 
+}

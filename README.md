@@ -21,12 +21,14 @@
 ## Installation
 
 1. **Clone the repository:**
+
    ```sh
    git clone git@github.com:alexerm/cursor-stats-extension.git
    cd cursor-stats-extension
    ```
 
 2. **Install dependencies:**
+
    ```sh
    pnpm install
    # or
@@ -34,6 +36,7 @@
    ```
 
 3. **Build the extension:**
+
    ```sh
    pnpm build
    # or
