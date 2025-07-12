@@ -1,8 +1,8 @@
 {
-  "name": "cursor-activity-ext",
-  "description": "Cursor Activity Extension",
+  "name": "cursor-stats",
+  "description": "Track and visualize your Cursor AI coding activity with charts and statistics",
   "private": true,
-  "version": "0.0.0",
+  "version": "1.0.0",
   "type": "module",
   "scripts": {
     "dev": "wxt",
