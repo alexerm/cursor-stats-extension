@@ -1,4 +1,5 @@
 import { defineConfig } from 'wxt';
+import { version } from './package.json';
 
 // See https://wxt.dev/api/config.html
 export default defineConfig({
@@ -6,7 +7,7 @@ export default defineConfig({
   manifest: {
     name: 'Cursor Stats',
     description: 'Track and visualize your Cursor AI coding activity with charts and statistics',
-    version: '1.0.0',
+    version,
     permissions: [
       'storage',
       'activeTab'
