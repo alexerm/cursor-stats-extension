@@ -5,6 +5,8 @@ import ActivityChart from './components/ActivityChart';
 export default defineContentScript({
   matches: ['*://cursor.com/*'],
   main() {
+    let currentRoot: ReactDOM.Root | null = null;
+
     // Wait for the page to load and the target element to be available
     const waitForElement = (selector: string, timeout = 10000) => {
       return new Promise<Element>((resolve, reject) => {
@@ -34,25 +36,56 @@ export default defineContentScript({
       });
     };
 
-    // Check if we're on the dashboard page
-    if (window.location.pathname === '/dashboard') {
-      waitForElement('main > div > div:nth-child(2) > div > div > div:nth-child(2) > div')
-        .then((targetElement) => {
-          // Create a container for our activity chart
-          const chartContainer = document.createElement('div');
-          chartContainer.id = 'cursor-activity-chart';
-          chartContainer.style.marginBottom = '24px';
-          
-          // Insert the container as the second child
-          targetElement.insertBefore(chartContainer, targetElement.children[1]);
-          
-          // Render the React component
-          const root = ReactDOM.createRoot(chartContainer);
-          root.render(React.createElement(ActivityChart));
-        })
-        .catch((error) => {
-          console.error('Failed to inject activity chart:', error);
-        });
-    }
+    const mountActivityChart = () => {
+      // Remove existing chart if it exists
+      const existingChart = document.getElementById('cursor-activity-chart');
+      if (existingChart) {
+        if (currentRoot) {
+          currentRoot.unmount();
+          currentRoot = null;
+        }
+        existingChart.remove();
+      }
+
+      // Check if we're on the dashboard usage tab
+      if (window.location.pathname === '/dashboard' && window.location.search === '?tab=usage') {
+        waitForElement('main > div > div:nth-child(2) > div > div > div:nth-child(2) > div')
+          .then((targetElement) => {
+            // Create a container for our activity chart
+            const chartContainer = document.createElement('div');
+            chartContainer.id = 'cursor-activity-chart';
+            chartContainer.style.marginBottom = '24px';
+            
+            // Insert the container as the second child
+            targetElement.insertBefore(chartContainer, targetElement.children[1]);
+            
+            // Render the React component
+            currentRoot = ReactDOM.createRoot(chartContainer);
+            currentRoot.render(React.createElement(ActivityChart));
+          })
+          .catch((error) => {
+            console.error('Failed to inject activity chart:', error);
+          });
+      }
+    };
+
+    // Mount on initial load
+    mountActivityChart();
+
+    // Listen for navigation changes (SPA routing)
+    let lastUrl = location.href;
+    new MutationObserver(() => {
+      const url = location.href;
+      if (url !== lastUrl) {
+        lastUrl = url;
+        // Small delay to ensure the new page content has loaded
+        setTimeout(mountActivityChart, 100);
+      }
+    }).observe(document, { subtree: true, childList: true });
+
+    // Also listen for popstate events (back/forward navigation)
+    window.addEventListener('popstate', () => {
+      setTimeout(mountActivityChart, 100);
+    });
   },
 });
