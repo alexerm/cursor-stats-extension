@@ -1,0 +1,113 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Privacy Policy - Cursor Stats Extension</title>
+    <meta name="description" content="Privacy Policy for Cursor Stats Extension" />
+    <link rel="stylesheet" href="styles.css" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+  </head>
+  <body>
+    <header class="header">
+      <nav class="nav">
+        <div class="nav-brand">
+          <img src="public/icon/48.png" alt="Cursor Stats" class="nav-logo" />
+          <span class="nav-title">Cursor Stats</span>
+        </div>
+        <div class="nav-links">
+          <a href="index.html" class="nav-link">Home</a>
+          <a href="privacy-policy.html" class="nav-link">Privacy Policy</a>
+          <a href="https://github.com/alexerm/cursor-activity-ext" class="nav-link" target="_blank">GitHub</a>
+        </div>
+      </nav>
+    </header>
+
+    <main>
+      <section class="privacy-policy">
+        <div class="container">
+          <h1>Privacy Policy</h1>
+          <p><em>Last updated: July 12, 2025</em></p>
+
+          <h2>1. Information We Do Not Collect</h2>
+          <ul>
+            <li>The Extension does <strong>not</strong> collect or transmit any personal data (e.g., name, email, IP address).</li>
+            <li>No personally identifiable information is logged or stored locally or remotely.</li>
+          </ul>
+
+          <h2>2. Information We Access</h2>
+          <ul>
+            <li>The Extension injects a content script on pages under <code>cursor.com</code>.</li>
+            <li>It fetches analytics and usage data from the Cursor API using your existing session.</li>
+            <li>Only performance metrics and usage statistics you already have access to are displayed.</li>
+          </ul>
+
+          <h2>3. Use of Data</h2>
+          <p>Data is used solely to render charts and statistics. No data is modified, shared, or sold.</p>
+
+          <h2>4. Permissions</h2>
+          <ul>
+            <li><code>activeTab</code>: to inject the activity chart.</li>
+            <li>Host permission <code>*://cursor.com/*</code>: to retrieve analytics data.</li>
+          </ul>
+
+          <h2>5. Third-Party Services</h2>
+          <p>The Extension uses only the Cursor API. No other third-party services or analytics are used.</p>
+
+          <h2>6. Data Retention</h2>
+          <p>No data is stored beyond the current browser session. All data is fetched live on each load.</p>
+
+          <h2>7. Security</h2>
+          <ul>
+            <li>All requests are made over HTTPS.</li>
+            <li>Strict Content Security Policy: <code>script-src 'self'; object-src 'self'</code>.</li>
+          </ul>
+
+          <h2>8. Changes to This Policy</h2>
+          <p>We may update this Privacy Policy at any time. Updates will be posted here with a revised date.</p>
+
+          <h2>9. Contact</h2>
+          <p>Questions? Open an issue on <a href="https://github.com/alexerm/cursor-activity-ext/issues" target="_blank">GitHub</a>.</p>
+        </div>
+      </section>
+    </main>
+
+    <footer class="footer">
+      <div class="container">
+        <div class="footer-content">
+          <div class="footer-brand">
+            <img src="public/icon/48.png" alt="Cursor Stats" class="footer-logo" />
+          </div>
+          <div class="footer-links">
+            <a href="index.html">Home</a>
+            <a href="privacy-policy.html">Privacy Policy</a>
+            <a href="https://github.com/alexerm/cursor-activity-ext" target="_blank">GitHub</a>
+            <a href="https://github.com/alexerm/cursor-activity-ext/issues" target="_blank">Issues</a>
+            <a href="https://github.com/alexerm/cursor-activity-ext/blob/main/LICENSE" target="_blank">License</a>
+          </div>
+        </div>
+        <div class="footer-bottom">
+          <p>&copy; 2025 Oleksandr Erm. Licensed under MIT License.</p>
+        </div>
+      </div>
+    </footer>
+
+    <script>
+      function copyToClipboard(text) {
+        navigator.clipboard.writeText(text);
+      }
+      document.querySelectorAll('a[href^="#"]').forEach((anchor) => {
+        anchor.addEventListener('click', function (e) {
+          e.preventDefault();
+          const target = document.querySelector(this.getAttribute('href'));
+          if (target) target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        });
+      });
+    </script>
+  </body>
+</html>
