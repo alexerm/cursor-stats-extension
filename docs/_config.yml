@@ -1,0 +1,34 @@
+title: Cursor Stats Extension
+description: Track and visualize your Cursor AI coding activity with charts and statistics
+url: https://alexerm.github.io
+baseurl: /cursor-activity-ext
+
+# Build settings
+markdown: kramdown
+highlighter: rouge
+theme: minima
+
+# Exclude files from processing
+exclude:
+  - README.md
+  - LICENSE
+  - package.json
+  - node_modules/
+  - .git/
+  - .gitignore
+
+# Include files
+include:
+  - _pages
+
+# SEO settings
+plugins:
+  - jekyll-seo-tag
+  - jekyll-sitemap
+
+# Social media
+github_username: alexerm
+author: Oleksandr Erm
+
+# Google Analytics (optional - add your tracking ID)
+# google_analytics: UA-XXXXXXXX-X

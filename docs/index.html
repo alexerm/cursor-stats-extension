@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cursor Stats Extension - Track Your AI Coding Activity</title>
+    <meta name="description" content="Visualize your Cursor AI coding activity with interactive charts and calendars. Track agent messages, accepted code suggestions, and token usage.">
+    <link rel="stylesheet" href="styles.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <header class="header">
+        <nav class="nav">
+            <div class="nav-brand">
+                <img src="public/icon/48.png" alt="Cursor Stats" class="nav-logo">
+                <span class="nav-title">Cursor Stats</span>
+            </div>
+            <div class="nav-links">
+                <a href="#features" class="nav-link">Features</a>
+                <a href="#install" class="nav-link">Install</a>
+                <a href="https://github.com/alexerm/cursor-activity-ext" class="nav-link" target="_blank">GitHub</a>
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section class="hero">
+            <div class="container">
+                <div class="hero-content">
+                    <h1 class="hero-title">
+                        Track Your <span class="gradient-text">Cursor AI</span> Activity
+                    </h1>
+                    <p class="hero-description">
+                        Visualize your coding productivity with interactive charts and calendars. 
+                        Monitor agent messages, accepted code suggestions, and token usage over time.
+                    </p>
+                    <div class="hero-actions">
+                        <a href="#install" class="btn btn-primary">
+                            <svg class="btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                                <polyline points="7,10 12,15 17,10"/>
+                                <line x1="12" y1="15" x2="12" y2="3"/>
+                            </svg>
+                            Install Extension
+                        </a>
+                        <a href="https://github.com/alexerm/cursor-activity-ext" class="btn btn-secondary" target="_blank">
+                            <svg class="btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"/>
+                            </svg>
+                            View Source
+                        </a>
+                    </div>
+                </div>
+                <div class="hero-visual">
+                    <div class="screenshot-container">
+                        <img src="screenshot.png" alt="Cursor Stats Extension Dashboard" class="screenshot">
+                        <div class="screenshot-overlay"></div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="features" class="features">
+            <div class="container">
+                <h2 class="section-title">Powerful Analytics for Your Coding Journey</h2>
+                <div class="features-grid">
+                    <div class="feature-card">
+                        <div class="feature-icon">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/>
+                                <line x1="16" y1="2" x2="16" y2="6"/>
+                                <line x1="8" y1="2" x2="8" y2="6"/>
+                                <line x1="3" y1="10" x2="21" y2="10"/>
+                            </svg>
+                        </div>
+                        <h3 class="feature-title">Agent Messages Calendar</h3>
+                        <p class="feature-description">
+                            Visualize your daily AI chat requests with an interactive calendar heatmap. 
+                            Track your engagement patterns and identify your most productive days.
+                        </p>
+                    </div>
+                    
+                    <div class="feature-card">
+                        <div class="feature-icon">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <polyline points="22,12 18,12 15,21 9,3 6,12 2,12"/>
+                            </svg>
+                        </div>
+                        <h3 class="feature-title">Accepted Lines Tracking</h3>
+                        <p class="feature-description">
+                            Monitor accepted code suggestions over time. See how AI assistance 
+                            contributes to your coding productivity and learn from usage patterns.
+                        </p>
+                    </div>
+                    
+                    <div class="feature-card">
+                        <div class="feature-icon">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M18 20V10"/>
+                                <path d="M12 20V4"/>
+                                <path d="M6 20v-6"/>
+                            </svg>
+                        </div>
+                        <h3 class="feature-title">Token Usage Analytics</h3>
+                        <p class="feature-description">
+                            Track your token consumption with detailed bar charts for the last 30 days. 
+                            Understand your usage patterns and optimize your AI interactions.
+                        </p>
+                    </div>
+                    
+                    <div class="feature-card">
+                        <div class="feature-icon">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/>
+                            </svg>
+                        </div>
+                        <h3 class="feature-title">Live Data Fetching</h3>
+                        <p class="feature-description">
+                            Real-time data synchronization with progressive loading. 
+                            Your dashboard updates automatically with the latest activity data.
+                        </p>
+                    </div>
+                    
+                    <div class="feature-card">
+                        <div class="feature-icon">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <circle cx="12" cy="12" r="3"/>
+                                <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1 1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/>
+                            </svg>
+                        </div>
+                        <h3 class="feature-title">Modern Dark UI</h3>
+                        <p class="feature-description">
+                            Clean, dark-themed dashboard designed for developers. 
+                            Easy on the eyes with intuitive navigation and beautiful data visualization.
+                        </p>
+                    </div>
+                    
+                    <div class="feature-card">
+                        <div class="feature-icon">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+                            </svg>
+                        </div>
+                        <h3 class="feature-title">Privacy Focused</h3>
+                        <p class="feature-description">
+                            Your data stays private. The extension only accesses your own Cursor analytics 
+                            and doesn't share any information with third parties.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="install" class="install">
+            <div class="container">
+                <h2 class="section-title">Get Started in Minutes</h2>
+                <div class="install-steps">
+                    <div class="step">
+                        <div class="step-number">1</div>
+                        <div class="step-content">
+                            <h3 class="step-title">Download the Extension</h3>
+                            <p class="step-description">
+                                Clone the repository and build the extension locally, or download the latest release.
+                            </p>
+                            <div class="code-block">
+                                <code>git clone https://github.com/alexerm/cursor-activity-ext.git</code>
+                                <button class="copy-btn" onclick="copyToClipboard('git clone https://github.com/alexerm/cursor-activity-ext.git')">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <rect x="9" y="9" width="13" height="13" rx="2" ry="2"/>
+                                        <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/>
+                                    </svg>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="step">
+                        <div class="step-number">2</div>
+                        <div class="step-content">
+                            <h3 class="step-title">Build the Extension</h3>
+                            <p class="step-description">
+                                Install dependencies and build the extension for your browser.
+                            </p>
+                            <div class="code-block">
+                                <code>pnpm install && pnpm build</code>
+                                <button class="copy-btn" onclick="copyToClipboard('pnpm install && pnpm build')">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <rect x="9" y="9" width="13" height="13" rx="2" ry="2"/>
+                                        <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/>
+                                    </svg>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="step">
+                        <div class="step-number">3</div>
+                        <div class="step-content">
+                            <h3 class="step-title">Load in Browser</h3>
+                            <p class="step-description">
+                                Open your browser's extensions page, enable Developer mode, and load the unpacked extension.
+                            </p>
+                            <div class="browser-steps">
+                                <div class="browser-step">
+                                    <strong>Chrome:</strong> chrome://extensions/ → Developer mode → Load unpacked
+                                </div>
+                                <div class="browser-step">
+                                    <strong>Firefox:</strong> about:debugging → This Firefox → Load Temporary Add-on
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="install-cta">
+                    <a href="https://github.com/alexerm/cursor-activity-ext/releases" class="btn btn-primary" target="_blank">
+                        Download Latest Release
+                    </a>
+                    <p class="install-note">
+                        Chrome Web Store submission coming soon. For now, install manually using the steps above.
+                    </p>
+                </div>
+            </div>
+        </section>
+
+        <section class="cta">
+            <div class="container">
+                <div class="cta-content">
+                    <h2 class="cta-title">Ready to Track Your Coding Journey?</h2>
+                    <p class="cta-description">
+                        Join developers who are already using Cursor Stats to optimize their AI-assisted coding workflow.
+                    </p>
+                    <div class="cta-actions">
+                        <a href="#install" class="btn btn-primary">Get Started Now</a>
+                        <a href="https://github.com/alexerm/cursor-activity-ext" class="btn btn-secondary" target="_blank">
+                            Star on GitHub
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-brand">
+                    <img src="public/icon/48.png" alt="Cursor Stats" class="footer-logo">
+                    <p class="footer-text">&copy; 2024 Cursor Stats. All rights reserved.</p>
+                </div>
+                <div class="footer-links">
+                    <a href="https://github.com/alexerm/cursor-activity-ext" target="_blank">GitHub</a>
+                    <a href="https://github.com/alexerm/cursor-activity-ext/issues" target="_blank">Issues</a>
+                    <a href="https://github.com/alexerm/cursor-activity-ext/blob/main/LICENSE" target="_blank">License</a>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2025 Oleksandr Erm. Licensed under MIT License.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        function copyToClipboard(text) {
+            navigator.clipboard.writeText(text).then(() => {
+                // Could add a toast notification here
+                console.log('Copied to clipboard:', text);
+            });
+        }
+
+        // Smooth scrolling for anchor links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                }
+            });
+        });
+    </script>
+</body>
+</html>
