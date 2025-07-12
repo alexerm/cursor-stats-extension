@@ -42,12 +42,16 @@ jobs:
           npm version ${{ steps.get_version.outputs.VERSION }} --no-git-tag-version
 
       - name: Build extension
+        env:
+          BUILD_NUMBER: ${{ github.run_number }}
         run: pnpm build
 
       - name: Create Chrome extension zip
         run: pnpm zip
 
       - name: Build Firefox extension
+        env:
+          BUILD_NUMBER: ${{ github.run_number }}
         run: pnpm build:firefox
 
       - name: Create Firefox extension zip
