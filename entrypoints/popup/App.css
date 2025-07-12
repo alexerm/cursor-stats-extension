@@ -6,7 +6,7 @@
   background: #18181b;
   color: #f4f4f5;
   font-family: 'Inter', 'Helvetica Neue', Arial, system-ui, sans-serif;
-  box-shadow: 0 2px 16px rgba(0,0,0,0.10);
+  box-shadow: 0 2px 16px rgba(0, 0, 0, 0.1);
   min-height: 220px;
   display: flex;
   flex-direction: column;
@@ -19,7 +19,7 @@
   height: 48px;
   margin-bottom: 1.1rem;
   border-radius: 10px;
-  box-shadow: 0 1px 6px rgba(0,0,0,0.10);
+  box-shadow: 0 1px 6px rgba(0, 0, 0, 0.1);
 }
 
 .app-heading {
@@ -49,7 +49,8 @@
   outline: none;
 }
 
-.app-cta:hover, .app-cta:focus {
+.app-cta:hover,
+.app-cta:focus {
   background: #374151;
   text-decoration: none;
 }
@@ -57,7 +58,9 @@
 .app-container a {
   color: #a5b4fc;
   text-decoration: none;
-  transition: color 0.15s, text-decoration 0.15s;
+  transition:
+    color 0.15s,
+    text-decoration 0.15s;
   font-weight: 500;
 }
 

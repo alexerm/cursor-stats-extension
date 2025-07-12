@@ -31,6 +31,7 @@ export default [
         setTimeout: 'readonly',
         MutationObserver: 'readonly',
         Element: 'readonly',
+        process: 'readonly',
       },
     },
     plugins: {
