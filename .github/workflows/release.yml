@@ -89,3 +89,14 @@ jobs:
 
             ---
             **Full Changelog**: https://github.com/${{ github.repository }}/compare/${{ steps.get_version.outputs.PREVIOUS_TAG }}...${{ steps.get_version.outputs.TAG_VERSION }}
+
+      - name: Trigger Pages Update
+        uses: peter-evans/repository-dispatch@v2
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          event-type: release-published
+          client-payload: |
+            {
+              "version": "${{ steps.get_version.outputs.TAG_VERSION }}",
+              "download_url": "https://github.com/${{ github.repository }}/releases/download/${{ steps.get_version.outputs.TAG_VERSION }}"
+            }

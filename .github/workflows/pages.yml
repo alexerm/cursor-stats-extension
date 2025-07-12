@@ -5,6 +5,8 @@ on:
     branches: [main]
   pull_request:
     branches: [main]
+  repository_dispatch:
+    types: [release-published]
 
 permissions:
   contents: read
@@ -24,6 +26,32 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+
+      - name: Update release info
+        run: |
+          # Fetch latest release info from GitHub API
+          LATEST_RELEASE=$(curl -s "https://api.github.com/repos/${{ github.repository }}/releases/latest")
+          
+          # Extract version and download URLs
+          VERSION=$(echo "$LATEST_RELEASE" | jq -r '.tag_name // "v0.0.0"')
+          CHROME_URL=$(echo "$LATEST_RELEASE" | jq -r '.assets[] | select(.name | contains("chrome")) | .browser_download_url // ""')
+          FIREFOX_URL=$(echo "$LATEST_RELEASE" | jq -r '.assets[] | select(.name | contains("firefox")) | .browser_download_url // ""')
+          RELEASE_URL=$(echo "$LATEST_RELEASE" | jq -r '.html_url // ""')
+          PUBLISHED_AT=$(echo "$LATEST_RELEASE" | jq -r '.published_at // ""')
+          
+          # Create release info JSON
+          cat > docs/release-info.json << EOF
+          {
+            "version": "$VERSION",
+            "chrome_download_url": "$CHROME_URL",
+            "firefox_download_url": "$FIREFOX_URL",
+            "release_url": "$RELEASE_URL",
+            "published_at": "$PUBLISHED_AT",
+            "updated_at": "$(date -u +%Y-%m-%dT%H:%M:%SZ)"
+          }
+          EOF
+          
+          echo "Created release-info.json with version: $VERSION"
 
       - name: Setup Pages
         uses: actions/configure-pages@v4
