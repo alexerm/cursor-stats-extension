@@ -16,8 +16,7 @@
 
 ## Screenshots
 
-<!-- Optionally add screenshots here -->
-<!-- ![Screenshot](assets/screenshot.png) -->
+![Screenshot](assets/screenshot.png)
 
 ## Installation
 
