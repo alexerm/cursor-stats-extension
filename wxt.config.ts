@@ -14,11 +14,11 @@ function getManifestVersion() {
 export default defineConfig({
   modules: ['@wxt-dev/module-react'],
   manifest: {
+    permissions: [],
     name: 'Cursor Stats',
     description: 'Track and visualize your Cursor AI coding activity with charts and statistics',
     version: getManifestVersion(),
     version_name: pkgVersion,
-    permissions: ['activeTab'],
     host_permissions: ['*://cursor.com/*'],
     content_security_policy: {
       extension_pages: "script-src 'self'; object-src 'self'",
