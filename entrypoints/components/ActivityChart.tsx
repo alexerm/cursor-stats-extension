@@ -3,6 +3,7 @@ import { AnalyticsData, BarChartData, CalendarData, UsageEvent, UsageEventsData 
 import UsageCalendar from './UsageCalendar';
 import AcceptedLinesCalendar from './AcceptedLinesCalendar';
 import TokensBarChart from './TokensBarChart';
+import DaysOfWeekDistribution, { transformDataForDaysOfWeek } from './DaysOfWeekDistribution';
 
 const transformDataForUsageCalendar = (analyticsData: AnalyticsData): CalendarData[] => {
   return analyticsData.dailyMetrics.map((metric) => {
@@ -203,6 +204,7 @@ const ActivityChart: React.FC = () => {
   const acceptedLinesData = analyticsData
     ? transformDataForAcceptedLinesCalendar(analyticsData)
     : [];
+  const daysOfWeekData = analyticsData ? transformDataForDaysOfWeek(analyticsData) : [];
 
   // Calculate tokens data from current usage events (even if still loading)
   const thirtyDaysAgo = new Date();
@@ -239,6 +241,20 @@ const ActivityChart: React.FC = () => {
         ) : (
           <div style={{ height: '200px' }}>
             <AcceptedLinesCalendar data={acceptedLinesData} from={from} to={to} theme={theme} />
+          </div>
+        )}
+      </div>
+
+      {/* Days of Week Distribution - Shows when analyticsData is ready */}
+      <div className="rounded-xl text-brand-foreground border-brand-neutrals-100 dark:border-brand-neutrals-800 border-0 bg-brand-dashboard-card p-6 dark:bg-brand-dashboard-card">
+        <h3 className="text-base font-semibold text-gray-200">Usage by Day of Week</h3>
+        {analyticsError ? (
+          <div className="text-red-500 text-sm mt-2">Error loading data: {analyticsError}</div>
+        ) : !analyticsData ? (
+          <div className="text-gray-50 text-sm mt-2">Loading...</div>
+        ) : (
+          <div style={{ height: '300px' }}>
+            <DaysOfWeekDistribution data={daysOfWeekData} theme={theme} />
           </div>
         )}
       </div>
