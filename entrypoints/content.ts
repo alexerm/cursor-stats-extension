@@ -65,8 +65,8 @@ export default defineContentScript({
           // Render the React component
           currentRoot = ReactDOM.createRoot(chartContainer);
           currentRoot.render(React.createElement(ActivityChart));
-        } catch (error) {
-          // console.error('Failed to inject activity chart:', error);
+        } catch {
+          // Failed to inject activity chart
         }
       }
     };
