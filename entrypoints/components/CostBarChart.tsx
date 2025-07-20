@@ -1,39 +1,41 @@
 import React from 'react';
 import { ResponsiveBar } from '@nivo/bar';
-import { BarChartData } from './types';
 
-interface TokensBarChartProps {
-  data: BarChartData[];
+interface CostData {
+  day: string;
+  subscription: number;
+  usage: number;
+  [key: string]: string | number;
+}
+
+interface CostBarChartProps {
+  data: CostData[];
   theme: Record<string, unknown>;
 }
 
-const TokensBarChart: React.FC<TokensBarChartProps> = ({ data, theme }) => {
-  
-  const formatTokenValue = (value: number) => {
-    if (value >= 1000000) {
-      return `${(value / 1000000).toFixed(2)}M`;
+const CostBarChart: React.FC<CostBarChartProps> = ({ data, theme }) => {
+  const formatCostValue = (value: number) => {
+    if (value >= 100) {
+      return `$${(value / 100).toFixed(2)}`;
     }
-    if (value >= 1000) {
-      return `${(value / 1000).toFixed(1)}k`;
-    }
-    return value.toString();
+    return `${value.toFixed(0)}¢`;
   };
-  
+
   // If no data, show a message
   if (!data || data.length === 0) {
     return (
       <div className="flex items-center justify-center h-full text-gray-400 text-sm">
-        No token usage data available for the last 14 days
+        No cost data available for the last 14 days
       </div>
     );
   }
-  
+
   // Check if all values are zero
-  const hasAnyTokens = data.some(item => (item.subscription || 0) > 0 || (item.usage || 0) > 0);
-  if (!hasAnyTokens) {
+  const hasAnyCosts = data.some((item) => (item.subscription || 0) > 0 || (item.usage || 0) > 0);
+  if (!hasAnyCosts) {
     return (
       <div className="flex items-center justify-center h-full text-gray-400 text-sm">
-        No token usage recorded for the last 14 days
+        No costs recorded for the last 14 days
       </div>
     );
   }
@@ -43,11 +45,11 @@ const TokensBarChart: React.FC<TokensBarChartProps> = ({ data, theme }) => {
       data={data}
       keys={['subscription', 'usage']}
       indexBy="day"
-      margin={{ top: 32, right: 32, bottom: 70, left: 70 }}
+      margin={{ top: 32, right: 32, bottom: 70, left: 80 }}
       padding={0.4}
       valueScale={{ type: 'linear' }}
       indexScale={{ type: 'band', round: true }}
-      colors={['#EAC0A2', '#C77272']}
+      colors={['#10B981', '#F59E0B']}
       borderColor={{ from: 'color', modifiers: [['darker', 1.6]] }}
       axisTop={null}
       axisRight={null}
@@ -68,10 +70,10 @@ const TokensBarChart: React.FC<TokensBarChartProps> = ({ data, theme }) => {
         tickSize: 5,
         tickPadding: 5,
         tickRotation: 0,
-        legend: 'Tokens',
+        legend: 'Cost',
         legendPosition: 'middle',
-        legendOffset: -60,
-        format: formatTokenValue,
+        legendOffset: -65,
+        format: formatCostValue,
       }}
       enableLabel={false}
       legends={[
@@ -131,7 +133,7 @@ const TokensBarChart: React.FC<TokensBarChartProps> = ({ data, theme }) => {
               }}
             ></div>
             <span style={{ textTransform: 'capitalize' }}>{id}</span>:{' '}
-            {formatTokenValue(value as number)} ({value.toLocaleString()})
+            {formatCostValue(value as number)} ({value.toFixed(2)}¢)
           </div>
         </div>
       )}
@@ -139,4 +141,4 @@ const TokensBarChart: React.FC<TokensBarChartProps> = ({ data, theme }) => {
   );
 };
 
-export default TokensBarChart;
+export default CostBarChart;

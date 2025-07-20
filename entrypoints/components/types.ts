@@ -42,9 +42,17 @@ export interface BarChartData {
   [key: string]: string | number;
 }
 
+export interface CostData {
+  day: string;
+  subscription: number;
+  usage: number;
+  [key: string]: string | number;
+}
+
 export interface TokenUsage {
   inputTokens?: number;
   outputTokens?: number;
+  cacheWriteTokens?: number;
   cacheReadTokens?: number;
   totalCents?: number;
 }
