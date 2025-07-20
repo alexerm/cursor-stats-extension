@@ -717,12 +717,12 @@ body {
   .release-info {
     padding: 1.5rem;
   }
-  
+
   .download-buttons {
     flex-direction: column;
     align-items: center;
   }
-  
+
   .download-buttons .btn {
     width: 100%;
     max-width: 280px;
@@ -738,7 +738,7 @@ body {
   .btn-secondary {
     border-color: rgba(255, 255, 255, 0.5);
   }
-  
+
   .release-info {
     border-color: rgba(255, 255, 255, 0.3);
     background: rgba(255, 255, 255, 0.1);

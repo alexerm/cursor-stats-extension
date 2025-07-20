@@ -8,7 +8,6 @@ interface TokensBarChartProps {
 }
 
 const TokensBarChart: React.FC<TokensBarChartProps> = ({ data, theme }) => {
-  
   const formatTokenValue = (value: number) => {
     if (value >= 1000000) {
       return `${(value / 1000000).toFixed(2)}M`;
@@ -18,7 +17,7 @@ const TokensBarChart: React.FC<TokensBarChartProps> = ({ data, theme }) => {
     }
     return value.toString();
   };
-  
+
   // If no data, show a message
   if (!data || data.length === 0) {
     return (
@@ -27,9 +26,9 @@ const TokensBarChart: React.FC<TokensBarChartProps> = ({ data, theme }) => {
       </div>
     );
   }
-  
+
   // Check if all values are zero
-  const hasAnyTokens = data.some(item => (item.subscription || 0) > 0 || (item.usage || 0) > 0);
+  const hasAnyTokens = data.some((item) => (item.subscription || 0) > 0 || (item.usage || 0) > 0);
   if (!hasAnyTokens) {
     return (
       <div className="flex items-center justify-center h-full text-gray-400 text-sm">

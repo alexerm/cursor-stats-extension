@@ -260,7 +260,13 @@
                   class="btn btn-primary"
                   target="_blank"
                 >
-                  <svg class="btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <svg
+                    class="btn-icon"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2"
+                  >
                     <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
                     <polyline points="7,10 12,15 17,10" />
                     <line x1="12" y1="15" x2="12" y2="3" />
@@ -273,7 +279,13 @@
                   class="btn btn-secondary"
                   target="_blank"
                 >
-                  <svg class="btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <svg
+                    class="btn-icon"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2"
+                  >
                     <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
                     <polyline points="7,10 12,15 17,10" />
                     <line x1="12" y1="15" x2="12" y2="3" />
@@ -281,9 +293,7 @@
                   Download for Firefox
                 </a>
               </div>
-              <p class="release-date">
-                Released: <span id="release-date">Loading...</span>
-              </p>
+              <p class="release-date">Released: <span id="release-date">Loading...</span></p>
             </div>
             <p class="install-note">
               Chrome Web Store submission coming soon. For now, install manually using the steps
@@ -324,8 +334,14 @@
           </div>
           <div class="footer-links">
             <a href="https://github.com/alexerm/cursor-activity-ext" target="_blank">GitHub</a>
-            <a href="https://github.com/alexerm/cursor-activity-ext/issues" target="_blank">Issues</a>
-            <a href="https://github.com/alexerm/cursor-activity-ext/blob/main/LICENSE" target="_blank">License</a>
+            <a href="https://github.com/alexerm/cursor-activity-ext/issues" target="_blank"
+              >Issues</a
+            >
+            <a
+              href="https://github.com/alexerm/cursor-activity-ext/blob/main/LICENSE"
+              target="_blank"
+              >License</a
+            >
             <a href="privacy-policy.html">Privacy Policy</a>
             <a href="https://github.com/alexerm/cursor-activity-ext" target="_blank">GitHub</a>
             <a href="https://github.com/alexerm/cursor-activity-ext/issues" target="_blank"
@@ -359,27 +375,27 @@
           if (!response.ok) {
             throw new Error('Failed to fetch release info');
           }
-          
+
           const releaseInfo = await response.json();
-          
+
           // Update version number
           const versionElement = document.getElementById('version-number');
           if (versionElement) {
             versionElement.textContent = releaseInfo.version || 'Unknown';
           }
-          
+
           // Update download links
           const chromeDownload = document.getElementById('chrome-download');
           const firefoxDownload = document.getElementById('firefox-download');
-          
+
           if (chromeDownload && releaseInfo.chrome_download_url) {
             chromeDownload.href = releaseInfo.chrome_download_url;
           }
-          
+
           if (firefoxDownload && releaseInfo.firefox_download_url) {
             firefoxDownload.href = releaseInfo.firefox_download_url;
           }
-          
+
           // Update release date
           const releaseDateElement = document.getElementById('release-date');
           if (releaseDateElement && releaseInfo.published_at) {
@@ -387,19 +403,18 @@
             releaseDateElement.textContent = date.toLocaleDateString('en-US', {
               year: 'numeric',
               month: 'long',
-              day: 'numeric'
+              day: 'numeric',
             });
           }
-          
         } catch (error) {
           console.error('Failed to load release info:', error);
-          
+
           // Fallback to GitHub releases page
           const versionElement = document.getElementById('version-number');
           if (versionElement) {
             versionElement.textContent = 'Latest';
           }
-          
+
           const releaseDateElement = document.getElementById('release-date');
           if (releaseDateElement) {
             releaseDateElement.textContent = 'Check GitHub';

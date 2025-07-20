@@ -14,6 +14,7 @@ import CostBarChart from './CostBarChart';
 import DaysOfWeekDistribution, { transformDataForDaysOfWeek } from './DaysOfWeekDistribution';
 import Last7DaysHeatmap, { transformDataForLast7DaysHeatmap } from './Last7DaysHeatmap';
 
+/* global localStorage */
 // Caching helpers for usage events to avoid refetching on every load
 const USAGE_EVENTS_CACHE_KEY = 'cursorUsageEventsCache_v1';
 const USAGE_EVENTS_CACHE_TTL_MS = 60 * 60 * 1000; // 1 hour
@@ -34,10 +35,7 @@ const loadCachedUsageEvents = (): UsageEvent[] | null => {
 
 const saveCachedUsageEvents = (events: UsageEvent[]) => {
   try {
-    localStorage.setItem(
-      USAGE_EVENTS_CACHE_KEY,
-      JSON.stringify({ timestamp: Date.now(), events }),
-    );
+    localStorage.setItem(USAGE_EVENTS_CACHE_KEY, JSON.stringify({ timestamp: Date.now(), events }));
   } catch {
     // ignore quota or serialization errors
   }
