@@ -1,7 +1,7 @@
 title: Cursor Stats Extension
 description: Track and visualize your Cursor AI coding activity with charts and statistics
 url: https://alexerm.github.io
-baseurl: /cursor-activity-ext
+baseurl: /cursor-stats-extension
 
 # Build settings
 markdown: kramdown
