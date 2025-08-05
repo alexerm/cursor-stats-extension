@@ -4,6 +4,7 @@
   "private": true,
   "version": "1.0.0",
   "type": "module",
+  "homepage": "https://alexerm.github.io/cursor-stats-extension/",
   "scripts": {
     "dev": "wxt",
     "dev:firefox": "wxt -b firefox",

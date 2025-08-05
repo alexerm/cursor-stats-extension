@@ -1,6 +1,7 @@
 # Cursor Stats Extension
 
-[![MIT License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
+[![Chrome Web Store](https://img.shields.io/badge/Chrome%20Web%20Store-Install%20Now-4285F4?style=for-the-badge&logo=google-chrome&logoColor=white)](https://chromewebstore.google.com/detail/cursor-stats/fdlfealdpfjfjnadhdobllmondagkcal)
+[![MIT License](https://img.shields.io/badge/License-MIT-green?style=for-the-badge&logo=opensourceinitiative&logoColor=white)](LICENSE)
 
 ## Overview
 
@@ -18,7 +19,18 @@
 
 ![Screenshot](assets/screenshot.png)
 
-## Installation
+## 🚀 Quick Install
+
+**[Install from Chrome Web Store →](https://chromewebstore.google.com/detail/cursor-stats/fdlfealdpfjfjnadhdobllmondagkcal)**
+
+*One-click installation - no setup required!*
+
+---
+
+## Alternative Installation Methods
+
+<details>
+<summary>📦 Manual Installation (for developers)</summary>
 
 1. **Clone the repository:**
 
@@ -44,9 +56,11 @@
    ```
 
 4. **Load into your browser:**
-   - Open your browser’s extensions page.
+   - Open your browser's extensions page.
    - Enable "Developer mode".
    - Click "Load unpacked" and select the `dist` or `build` directory.
+
+</details>
 
 ## Usage
 
