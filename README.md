@@ -23,7 +23,7 @@
 
 **[Install from Chrome Web Store →](https://chromewebstore.google.com/detail/cursor-stats/fdlfealdpfjfjnadhdobllmondagkcal)**
 
-*One-click installation - no setup required!*
+_One-click installation - no setup required!_
 
 ---
 

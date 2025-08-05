@@ -5,6 +5,10 @@
   "version": "1.0.0",
   "type": "module",
   "homepage": "https://alexerm.github.io/cursor-stats-extension/",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/alexerm/cursor-stats-extension.git"
+  },
   "scripts": {
     "dev": "wxt",
     "dev:firefox": "wxt -b firefox",

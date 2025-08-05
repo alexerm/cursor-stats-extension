@@ -11,6 +11,8 @@ import UsageCalendar from './UsageCalendar';
 import AcceptedLinesCalendar from './AcceptedLinesCalendar';
 import TokensBarChart from './TokensBarChart';
 import CostBarChart from './CostBarChart';
+import AvgTokensBarChart from './AvgTokensBarChart';
+import AvgCostBarChart from './AvgCostBarChart';
 import DaysOfWeekDistribution, { transformDataForDaysOfWeek } from './DaysOfWeekDistribution';
 import Last7DaysHeatmap, { transformDataForLast7DaysHeatmap } from './Last7DaysHeatmap';
 
@@ -128,6 +130,116 @@ const transformDataForCostBarChart = (usageEvents: UsageEvent[]): CostData[] => 
     .map((day) => ({
       day,
       ...dailyCosts[day],
+    }))
+    .sort((a, b) => a.day.localeCompare(b.day));
+};
+
+const transformDataForAvgTokensPerRequest = (usageEvents: UsageEvent[]): BarChartData[] => {
+  const dailyData: {
+    [day: string]: {
+      subscriptionTokens: number;
+      usageTokens: number;
+      subscriptionRequests: number;
+      usageRequests: number;
+    };
+  } = {};
+
+  usageEvents.forEach((event) => {
+    const date = new Date(parseInt(event.timestamp, 10));
+    const day = date.toISOString().split('T')[0]; // YYYY-MM-DD
+
+    if (!dailyData[day]) {
+      dailyData[day] = {
+        subscriptionTokens: 0,
+        usageTokens: 0,
+        subscriptionRequests: 0,
+        usageRequests: 0,
+      };
+    }
+
+    if (event.tokenUsage) {
+      const totalTokens =
+        (event.tokenUsage.inputTokens || 0) +
+        (event.tokenUsage.outputTokens || 0) +
+        (event.tokenUsage.cacheReadTokens || 0) +
+        (event.tokenUsage.cacheWriteTokens || 0);
+
+      if (
+        event.kind === 'USAGE_EVENT_KIND_INCLUDED_IN_PRO' ||
+        event.kind === 'USAGE_EVENT_KIND_INCLUDED_IN_ULTRA'
+      ) {
+        dailyData[day].subscriptionTokens += totalTokens;
+        dailyData[day].subscriptionRequests += 1;
+      } else if (event.kind === 'USAGE_EVENT_KIND_USAGE_BASED') {
+        dailyData[day].usageTokens += totalTokens;
+        dailyData[day].usageRequests += 1;
+      }
+    }
+  });
+
+  return Object.keys(dailyData)
+    .map((day) => ({
+      day,
+      subscription:
+        dailyData[day].subscriptionRequests > 0
+          ? Math.round(dailyData[day].subscriptionTokens / dailyData[day].subscriptionRequests)
+          : 0,
+      usage:
+        dailyData[day].usageRequests > 0
+          ? Math.round(dailyData[day].usageTokens / dailyData[day].usageRequests)
+          : 0,
+    }))
+    .sort((a, b) => a.day.localeCompare(b.day));
+};
+
+const transformDataForAvgCostPerRequest = (usageEvents: UsageEvent[]): CostData[] => {
+  const dailyData: {
+    [day: string]: {
+      subscriptionCosts: number;
+      usageCosts: number;
+      subscriptionRequests: number;
+      usageRequests: number;
+    };
+  } = {};
+
+  usageEvents.forEach((event) => {
+    const date = new Date(parseInt(event.timestamp, 10));
+    const day = date.toISOString().split('T')[0]; // YYYY-MM-DD
+
+    if (!dailyData[day]) {
+      dailyData[day] = {
+        subscriptionCosts: 0,
+        usageCosts: 0,
+        subscriptionRequests: 0,
+        usageRequests: 0,
+      };
+    }
+
+    if (event.tokenUsage && event.tokenUsage.totalCents) {
+      if (
+        event.kind === 'USAGE_EVENT_KIND_INCLUDED_IN_PRO' ||
+        event.kind === 'USAGE_EVENT_KIND_INCLUDED_IN_ULTRA'
+      ) {
+        dailyData[day].subscriptionCosts += event.tokenUsage.totalCents;
+        dailyData[day].subscriptionRequests += 1;
+      } else if (event.kind === 'USAGE_EVENT_KIND_USAGE_BASED') {
+        dailyData[day].usageCosts += event.tokenUsage.totalCents;
+        dailyData[day].usageRequests += 1;
+      }
+    }
+  });
+
+  return Object.keys(dailyData)
+    .map((day) => ({
+      day,
+      subscription:
+        dailyData[day].subscriptionRequests > 0
+          ? dailyData[day].subscriptionCosts / dailyData[day].subscriptionRequests
+          : 0,
+      usage:
+        dailyData[day].usageRequests > 0
+          ? dailyData[day].usageCosts / dailyData[day].usageRequests
+          : 0,
     }))
     .sort((a, b) => a.day.localeCompare(b.day));
 };
@@ -325,6 +437,12 @@ const ActivityChart: React.FC = () => {
   });
   const costData = transformDataForCostBarChart(last14DaysUsageEventsCost);
 
+  // Calculate average tokens per request data from current usage events for last 14 days
+  const avgTokensData = transformDataForAvgTokensPerRequest(last14DaysUsageEvents);
+
+  // Calculate average cost per request data from current usage events for last 14 days
+  const avgCostData = transformDataForAvgCostPerRequest(last14DaysUsageEventsCost);
+
   return (
     <div className="space-y-6">
       {/* AI Chat Requests - Shows when analyticsData is ready */}
@@ -441,6 +559,69 @@ const ActivityChart: React.FC = () => {
               </div>
             ) : (
               <CostBarChart data={costData} theme={theme} />
+            )}
+          </div>
+        )}
+      </div>
+
+      {/* Average Tokens per Request - Updates progressively as data loads */}
+      <div className="rounded-xl text-brand-foreground border-brand-neutrals-100 dark:border-brand-neutrals-800 border-0 bg-brand-dashboard-card p-6 dark:bg-brand-dashboard-card">
+        <h3 className="text-base font-semibold text-gray-200">
+          Avg. Tokens per Request (last 14 days)
+          {usageEventsLoading && usageEventsProgress.total > 0 && (
+            <span className="text-sm font-normal text-gray-400 ml-2">
+              ({Math.round((usageEventsProgress.fetched / usageEventsProgress.total) * 100)}%
+              loaded)
+            </span>
+          )}
+        </h3>
+        <p className="px-6 text-sm text-gray-500">
+          Average number of tokens consumed per request, split by subscription and usage-based
+          requests.
+        </p>
+        {usageEventsError ? (
+          <div className="text-red-500 text-sm mt-2 px-6">
+            Error loading usage data: {usageEventsError}
+          </div>
+        ) : (
+          <div style={{ height: '400px' }} className="p-3">
+            {avgTokensData.length === 0 && usageEventsLoading ? (
+              <div className="flex items-center justify-center h-full text-gray-50 text-sm">
+                Loading usage events...
+              </div>
+            ) : (
+              <AvgTokensBarChart data={avgTokensData} theme={theme} />
+            )}
+          </div>
+        )}
+      </div>
+
+      {/* Average Cost per Request - Updates progressively as data loads */}
+      <div className="rounded-xl text-brand-foreground border-brand-neutrals-100 dark:border-brand-neutrals-800 border-0 bg-brand-dashboard-card p-6 dark:bg-brand-dashboard-card">
+        <h3 className="text-base font-semibold text-gray-200">
+          Avg. Cost per Request (last 14 days)
+          {usageEventsLoading && usageEventsProgress.total > 0 && (
+            <span className="text-sm font-normal text-gray-400 ml-2">
+              ({Math.round((usageEventsProgress.fetched / usageEventsProgress.total) * 100)}%
+              loaded)
+            </span>
+          )}
+        </h3>
+        <p className="px-6 text-sm text-gray-500">
+          Average cost per request in cents, split by subscription and usage-based requests.
+        </p>
+        {usageEventsError ? (
+          <div className="text-red-500 text-sm mt-2 px-6">
+            Error loading usage data: {usageEventsError}
+          </div>
+        ) : (
+          <div style={{ height: '400px' }} className="p-3">
+            {avgCostData.length === 0 && usageEventsLoading ? (
+              <div className="flex items-center justify-center h-full text-gray-50 text-sm">
+                Loading usage events...
+              </div>
+            ) : (
+              <AvgCostBarChart data={avgCostData} theme={theme} />
             )}
           </div>
         )}
